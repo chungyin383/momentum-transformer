@@ -113,6 +113,14 @@ def deep_momentum_strategy_features(df_asset: pd.DataFrame) -> pd.DataFrame:
             df_asset["srs"], short_window, long_window
         )
 
+    #RSI
+    df_asset[f"rsi"] = ta.RSI(df_asset["close"])
+    
+    #Stochastic Oscillator
+    low = df_asset["close"].rolling(14).min()
+    high = df_asset["close"].rolling(14).max()
+    df_asset["%K"] = ((df_asset["close"] - low)*100/(high - low)).rolling(3).mean()
+
     # date features
     if len(df_asset):
         df_asset["day_of_week"] = df_asset.index.dayofweek
