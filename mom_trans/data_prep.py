@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import talib as ta
 
 from mom_trans.classical_strategies import (
     MACDStrategy,
