@@ -118,7 +118,7 @@ class SharpeValidationLoss(keras.callbacks.Callback):
                 self.model.stop_training = True
                 self.model.load_weights(self.weights_save_location)
         logs["sharpe"] = sharpe  # for keras tuner
-        print(f"\nval_sharpe {logs['sharpe']}")
+        print(f"\nval_sharpe {logs['sharpe']}\n")
 
 
 # Tuner = RandomSearch
