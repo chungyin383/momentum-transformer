@@ -131,8 +131,3 @@ dmypy.json
 results/
 .vscode/
 nohup*
-data/*
-!data/pull_data.py
-!data/download_quandl_data.py
-!data/__init__.py
-!data/download_coingecko_data.py
