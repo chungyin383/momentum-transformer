@@ -85,6 +85,8 @@ class ModelFeatures:
         lags=None,
         asset_class_dictionary=None,
         static_ticker_type_feature = False,
+        rsi=False,
+        kd=False
     ):
         """Initialises formatter. Splits data frame into training-validation-test data frames.
         This also calibrates scaling object, and transforms data for each split."""
@@ -121,6 +123,25 @@ class ModelFeatures:
                 self._column_definition.append(
                     (f"cp_rl_{lbw}", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT)
                 )
+
+        if rsi:
+            self._column_definition.append(
+                ("rsi_7", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("rsi_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("rsi_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            
+        if kd:
+            self._column_definition.append(
+                ("k_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("d_3", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
 
         if time_features:
             self._column_definition.append(
