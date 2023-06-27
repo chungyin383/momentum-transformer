@@ -409,6 +409,8 @@ def run_single_window(
         time_features=params["time_features"],
         lags=params["force_output_sharpe_length"],
         asset_class_dictionary=asset_class_dictionary,
+        rsi=params["rsi"],
+        kd=params["kd"],
     )
 
     hp_directory = os.path.join(directory, "hp")

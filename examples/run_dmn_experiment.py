@@ -17,7 +17,6 @@ FORCE_OUTPUT_SHARPE_LENGTH = None
 EVALUATE_DIVERSIFIED_VAL_SHARPE = True
 NAME = "experiment_quandl_100assets"
 
-
 def main(
     experiment: str,
     train_start: int,
@@ -26,6 +25,10 @@ def main(
     test_window_size: int,
     num_repeats: int,
 ):
+    # default values
+    rsi = False
+    kd = False
+
     if experiment == "LSTM":
         architecture = "LSTM"
         lstm_time_steps = 63
@@ -58,6 +61,12 @@ def main(
         architecture = "TFT"
         lstm_time_steps = 63
         changepoint_lbws = [63]
+    elif experiment == "TFT-RSI-KD":
+        architecture = "TFT"
+        lstm_time_steps = 252
+        changepoint_lbws = None
+        rsi = True
+        kd = True
     else:
         raise BaseException("Invalid experiment.")
 
@@ -75,7 +84,9 @@ def main(
         else reduce(lambda x, y: str(x) + str(y), changepoint_lbws)
     )
     time_string = "time" if TIME_FEATURES else "notime"
-    _project_name = f"{experiment_prefix}_{architecture.lower()}_cp{cp_string}_len{lstm_time_steps}_{time_string}_{'div' if EVALUATE_DIVERSIFIED_VAL_SHARPE else 'val'}"
+    rsi_string = "rsi" if rsi else "norsi"
+    kd_string = "kd" if kd else "nokd"
+    _project_name = f"{experiment_prefix}_{architecture.lower()}_cp{cp_string}_len{lstm_time_steps}_{time_string}_{rsi_string}_{kd_string}_{'div' if EVALUATE_DIVERSIFIED_VAL_SHARPE else 'val'}"
     if FORCE_OUTPUT_SHARPE_LENGTH:
         _project_name += f"_outlen{FORCE_OUTPUT_SHARPE_LENGTH}"
     _project_name += "_v"
@@ -94,6 +105,8 @@ def main(
         params["train_valid_ratio"] = TRAIN_VALID_RATIO
         params["time_features"] = TIME_FEATURES
         params["force_output_sharpe_length"] = FORCE_OUTPUT_SHARPE_LENGTH
+        params["rsi"] = rsi
+        params["kd"] = kd
 
         if TEST_MODE:
             params["num_epochs"] = 1
@@ -143,6 +156,7 @@ if __name__ == "__main__":
                 "TFT-SHORT",
                 "TFT-SHORT-CPD-21",
                 "TFT-SHORT-CPD-63",
+                "TFT-RSI-KD",
             ],
             help="Input folder for CPD outputs.",
         )
