@@ -24,6 +24,7 @@ def main(
     test_end: int,
     test_window_size: int,
     num_repeats: int,
+    GLU_Variant: str,
 ):
     # default values
     rsi = False
@@ -107,6 +108,7 @@ def main(
         params["force_output_sharpe_length"] = FORCE_OUTPUT_SHARPE_LENGTH
         params["rsi"] = rsi
         params["kd"] = kd
+        params["GLU_Variant"] = GLU_Variant
 
         if TEST_MODE:
             params["num_epochs"] = 1
@@ -132,6 +134,7 @@ def main(
             ASSET_CLASS_MAPPING,
             [32, 64, 128] if lstm_time_steps == 252 else HP_MINIBATCH_SIZE,
             test_window_size,
+            activation,
         )
 
 
@@ -200,6 +203,21 @@ if __name__ == "__main__":
             default=1,
             help="Number of experiment repeats.",
         )
+        parser.add_argument(
+            "GLU_Variant",
+            metavar="g",
+            type=str,
+            nargs="?",
+            default="GLU",
+            choices=[
+                "GLU",
+                "Bilinear",
+                "ReGLU",
+                "GEGLU",
+                "SwiGLU",
+            ],
+            help="GLU Variants",
+        )
 
         args = parser.parse_known_args()[0]
 
@@ -210,6 +228,7 @@ if __name__ == "__main__":
             args.test_end,
             args.test_window_size,
             args.num_repeats,
+            args.GLU_Variant,
         )
 
     main(*get_args())
