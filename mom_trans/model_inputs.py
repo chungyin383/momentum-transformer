@@ -140,7 +140,13 @@ class ModelFeatures:
                 ("k_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
             )
             self._column_definition.append(
-                ("d_3", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+                ("d_14_3", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("k_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("d_21_5", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
             )
 
         if time_features:
