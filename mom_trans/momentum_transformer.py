@@ -82,6 +82,7 @@ def apply_gating_layer(
     dropout_rate: float = None,
     use_time_distributed: bool = True,
     activation=None,
+    GLU_Variant="GLU",
 ):
     """Applies a Gated Linear Unit (GLU) to an input.
     Args:
@@ -93,7 +94,24 @@ def apply_gating_layer(
     Returns:
         Tuple of tensors for: (GLU output, gate)
     """
-
+  
+    def GELU(X):
+        return 0.5*X*(1.0 + math.tanh(0.7978845608028654*(X + 0.044715*math.pow(X, 3))))
+        
+    def Swish(X):
+        return X*sigmoid(X)
+  
+    if GLU_Variant == "GLU":
+        GLU_activation = "sigmoid"
+    elif GLU_Variant == "Bilinear":
+        GLU_activation = None
+    elif GLU_Variant == "ReGLU":
+        GLU_activation = "relu"
+    elif GLU_Variant == "GEGLU":
+        GLU_activation = GELU
+    elif GLU_Variant == "SwiGLU":
+        GLU_activation = Swish
+    
     if dropout_rate is not None:
         x = keras.layers.Dropout(dropout_rate)(x)
 
@@ -102,13 +120,13 @@ def apply_gating_layer(
             keras.layers.Dense(hidden_layer_size, activation=activation)
         )(x)
         gated_layer = keras.layers.TimeDistributed(
-            keras.layers.Dense(hidden_layer_size, activation="sigmoid")
+            keras.layers.Dense(hidden_layer_size, activation=GLU_activation)
         )(x)
     else:
         activation_layer = keras.layers.Dense(hidden_layer_size, activation=activation)(
             x
         )
-        gated_layer = keras.layers.Dense(hidden_layer_size, activation="sigmoid")(x)
+        gated_layer = keras.layers.Dense(hidden_layer_size, activation=GLU_activation)(x)
 
     return keras.layers.multiply([activation_layer, gated_layer]), gated_layer
 
@@ -179,6 +197,7 @@ def gated_residual_network(
         dropout_rate=dropout_rate,
         use_time_distributed=use_time_distributed,
         activation=None,
+        GLU_Variant=self.GLU_Variant,
     )
 
     if return_gate:
@@ -316,7 +335,7 @@ class InterpretableMultiHeadAttention(keras.layers.Layer):
 
 
 class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
-    def __init__(self, project_name, hp_directory, hp_minibatch_size=HP_MINIBATCH_SIZE, **params):
+    def __init__(self, project_name, hp_directory, hp_minibatch_size=HP_MINIBATCH_SIZE, activation, **params):
         params = params.copy()
 
         self._input_placeholder = None
@@ -335,6 +354,8 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
         self.num_stacks = params["stack_size"]
         self.num_heads = params["num_heads"]
         self.input_size = int(params["input_size"])
+        
+        self.GLU_Variant = params["GLU_Variant"]
 
         super().__init__(project_name, hp_directory, hp_minibatch_size, **params)
 
@@ -554,7 +575,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
         )
 
         lstm_layer, _ = apply_gating_layer(
-            lstm_layer, self.hidden_layer_size, self.dropout_rate, activation=None
+            lstm_layer, self.hidden_layer_size, self.dropout_rate, activation=None, GLU_Variant=self.GLU_Variant
         )
         temporal_feature_layer = add_and_norm([lstm_layer, input_embeddings])
 
@@ -580,7 +601,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
         x, self_att = self_attn_layer(enriched, enriched, enriched, mask=mask)
         
         x, _ = apply_gating_layer(
-            x, self.hidden_layer_size, dropout_rate=self.dropout_rate, activation=None
+            x, self.hidden_layer_size, dropout_rate=self.dropout_rate, activation=None, GLU_Variant=self.GLU_Variant
         )
         x = add_and_norm([x, enriched])
 
@@ -594,7 +615,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
 
         # Final skip connection
         decoder, _ = apply_gating_layer(
-            decoder, self.hidden_layer_size, activation=None
+            decoder, self.hidden_layer_size, activation=None, GLU_Variant=self.GLU_Variant
         )
         transformer_layer = add_and_norm([decoder, temporal_feature_layer])
 

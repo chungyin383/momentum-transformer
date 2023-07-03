@@ -411,6 +411,7 @@ def run_single_window(
         asset_class_dictionary=asset_class_dictionary,
         rsi=params["rsi"],
         kd=params["kd"],
+        GLU_Variant=params["GLU_Variant"],
     )
 
     hp_directory = os.path.join(directory, "hp")
@@ -564,6 +565,7 @@ def run_all_windows(
         asset_class_dictionary ([type], optional): map tickers to asset class. Defaults to None. Defaults to Dict[str, str].
         hp_minibatch_size ([type], optional): minibatch size hyperparameter grid. Defaults to HP_MINIBATCH_SIZE.
         standard_window_size (int, optional): standard number of years in test window. Defaults to 1.
+        activation (str, optional): activation function. Defaults to "softmax".
     """
     # run the expanding window
     for interval in train_intervals:
