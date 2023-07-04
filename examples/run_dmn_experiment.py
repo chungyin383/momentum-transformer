@@ -108,7 +108,7 @@ def main(
         params["rsi"] = rsi
         params["kd"] = kd
         params["GLU_Variant"] = GLU_Variant
-        params["categorical_indicators"] = categorical
+        params["categorical"] = categorical
 
         if TEST_MODE:
             params["num_epochs"] = 1
