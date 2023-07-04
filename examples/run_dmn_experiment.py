@@ -86,7 +86,7 @@ def main(
     _project_name = f"{experiment_prefix}_{architecture.lower()}_cp{cp_string}_len{lstm_time_steps}" \
                     f"_{time_string}_{'div' if EVALUATE_DIVERSIFIED_VAL_SHARPE else 'val'}" \
                     f"{rsi_string}{kd_string}{cat_string}{glu_string}"
-    print(_project_name)
+
     if FORCE_OUTPUT_SHARPE_LENGTH:
         _project_name += f"_outlen{FORCE_OUTPUT_SHARPE_LENGTH}"
     _project_name += "_v"
