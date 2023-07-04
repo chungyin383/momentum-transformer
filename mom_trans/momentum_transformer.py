@@ -335,7 +335,7 @@ class InterpretableMultiHeadAttention(keras.layers.Layer):
 
 
 class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
-    def __init__(self, project_name, hp_directory, hp_minibatch_size=HP_MINIBATCH_SIZE, activation, **params):
+    def __init__(self, project_name, hp_directory, hp_minibatch_size=HP_MINIBATCH_SIZE, **params):
         params = params.copy()
 
         self._input_placeholder = None
