@@ -411,7 +411,7 @@ def run_single_window(
         asset_class_dictionary=asset_class_dictionary,
         rsi=params["rsi"],
         kd=params["kd"],
-        GLU_Variant=params["GLU_Variant"],
+        categorical=params["categorical"]
     )
 
     hp_directory = os.path.join(directory, "hp")
