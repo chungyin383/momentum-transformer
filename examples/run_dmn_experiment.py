@@ -25,10 +25,10 @@ def main(
     test_window_size: int,
     num_repeats: int,
     GLU_Variant: str,
+    rsi: bool,
+    kd: bool,
+    categorical: bool
 ):
-    # default values
-    rsi = False
-    kd = False
 
     if experiment == "LSTM":
         architecture = "LSTM"
@@ -62,12 +62,6 @@ def main(
         architecture = "TFT"
         lstm_time_steps = 63
         changepoint_lbws = [63]
-    elif experiment == "TFT-RSI-KD":
-        architecture = "TFT"
-        lstm_time_steps = 252
-        changepoint_lbws = None
-        rsi = True
-        kd = True
     else:
         raise BaseException("Invalid experiment.")
 
@@ -85,9 +79,14 @@ def main(
         else reduce(lambda x, y: str(x) + str(y), changepoint_lbws)
     )
     time_string = "time" if TIME_FEATURES else "notime"
-    rsi_string = "rsi" if rsi else "norsi"
-    kd_string = "kd" if kd else "nokd"
-    _project_name = f"{experiment_prefix}_{architecture.lower()}_cp{cp_string}_len{lstm_time_steps}_{time_string}_{rsi_string}_{kd_string}_{'div' if EVALUATE_DIVERSIFIED_VAL_SHARPE else 'val'}"
+    rsi_string = "_rsi" if rsi else ""
+    kd_string = "_kd" if kd else ""
+    cat_string = "_cat" if categorical else ""
+    glu_string = f"_{GLU_Variant}" if GLU_Variant != "GLU" else ""
+    _project_name = f"{experiment_prefix}_{architecture.lower()}_cp{cp_string}_len{lstm_time_steps}" \
+                    f"_{time_string}_{'div' if EVALUATE_DIVERSIFIED_VAL_SHARPE else 'val'}" \
+                    f"{rsi_string}{kd_string}{cat_string}{glu_string}"
+
     if FORCE_OUTPUT_SHARPE_LENGTH:
         _project_name += f"_outlen{FORCE_OUTPUT_SHARPE_LENGTH}"
     _project_name += "_v"
@@ -109,6 +108,7 @@ def main(
         params["rsi"] = rsi
         params["kd"] = kd
         params["GLU_Variant"] = GLU_Variant
+        params["categorical_indicators"] = categorical
 
         if TEST_MODE:
             params["num_epochs"] = 1
@@ -158,12 +158,11 @@ if __name__ == "__main__":
                 "TFT-SHORT",
                 "TFT-SHORT-CPD-21",
                 "TFT-SHORT-CPD-63",
-                "TFT-RSI-KD",
             ],
             help="Input folder for CPD outputs.",
         )
         parser.add_argument(
-            "train_start",
+            "--train_start",
             metavar="s",
             type=int,
             nargs="?",
@@ -171,7 +170,7 @@ if __name__ == "__main__":
             help="Training start year",
         )
         parser.add_argument(
-            "test_start",
+            "--test_start",
             metavar="t",
             type=int,
             nargs="?",
@@ -179,7 +178,7 @@ if __name__ == "__main__":
             help="Training end year and test start year.",
         )
         parser.add_argument(
-            "test_end",
+            "--test_end",
             metavar="e",
             type=int,
             nargs="?",
@@ -187,7 +186,7 @@ if __name__ == "__main__":
             help="Testing end year.",
         )
         parser.add_argument(
-            "test_window_size",
+            "--test_window_size",
             metavar="w",
             type=int,
             nargs="?",
@@ -195,7 +194,7 @@ if __name__ == "__main__":
             help="Test window length in years.",
         )
         parser.add_argument(
-            "num_repeats",
+            "--num_repeats",
             metavar="r",
             type=int,
             nargs="?",
@@ -203,7 +202,7 @@ if __name__ == "__main__":
             help="Number of experiment repeats.",
         )
         parser.add_argument(
-            "GLU_Variant",
+            "--GLU_Variant",
             metavar="g",
             type=str,
             nargs="?",
@@ -217,6 +216,21 @@ if __name__ == "__main__":
             ],
             help="GLU Variants",
         )
+        parser.add_argument(
+            "--rsi", 
+            action='store_true', 
+            help='Whether to add RSI as additional input features'
+        )
+        parser.add_argument(
+            "--kd", 
+            action='store_true', 
+            help='Whether to add stochastic oscillator as additional input features'
+        )
+        parser.add_argument(
+            "--categorical", 
+            action='store_true', 
+            help='Whether to prepare indicators in categories, default is raw indicator values'
+        )
 
         args = parser.parse_known_args()[0]
 
@@ -228,6 +242,9 @@ if __name__ == "__main__":
             args.test_window_size,
             args.num_repeats,
             args.GLU_Variant,
+            args.rsi,
+            args.kd,
+            args.categorical
         )
 
     main(*get_args())
