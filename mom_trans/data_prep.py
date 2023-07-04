@@ -64,7 +64,12 @@ def prepare_cpd_features(folder_path: str, lookback_window_length: int) -> pd.Da
     )
 
 
-def deep_momentum_strategy_features(df_asset: pd.DataFrame) -> pd.DataFrame:
+def deep_momentum_strategy_features(
+    df_asset: pd.DataFrame, 
+    rsi: bool,
+    kd: bool,
+    categorical: bool
+) -> pd.DataFrame:
     """prepare input features for deep learning model
 
     Args:
@@ -108,24 +113,46 @@ def deep_momentum_strategy_features(df_asset: pd.DataFrame) -> pd.DataFrame:
     df_asset["norm_biannual_return"] = calc_normalised_returns(126)
     df_asset["norm_annual_return"] = calc_normalised_returns(252)
 
+    # MACD
     trend_combinations = [(8, 24), (16, 48), (32, 96)]
     for short_window, long_window in trend_combinations:
         df_asset[f"macd_{short_window}_{long_window}"] = MACDStrategy.calc_signal(
             df_asset["srs"], short_window, long_window
         )
+        if categorical:
+            macd_line = df_asset[f"macd_{short_window}_{long_window}"]
+            signal_line = macd_line.ewm(span=9, adjust=False).mean() # 9-period EMA of the MACD line
+            df_asset[f"macd_{short_window}_{long_window}"] = 0
+            df_asset.loc[(macd_line >= signal_line) & (macd_line.shift(1) < signal_line.shift(1)), f"macd_{short_window}_{long_window}"] = 1
+            df_asset.loc[(macd_line <= signal_line) & (macd_line.shift(1) > signal_line.shift(1)), f"macd_{short_window}_{long_window}"] = -1
 
-    #RSI
-    rsi_lengths = [7, 14, 21]
-    for rsi_length in rsi_lengths:
-        df_asset[f"rsi_{rsi_length}"] = ta.RSI(df_asset["close"], rsi_length)
+    # RSI
+    if rsi:
+        rsi_lengths = [7, 14, 21]
+        for rsi_length in rsi_lengths:
+            df_asset[f"rsi_{rsi_length}"] = ta.RSI(df_asset["close"], rsi_length)
+            if categorical:
+                rsi_values = df_asset[f"rsi_{rsi_length}"]
+                df_asset[f"rsi_{rsi_length}"] = 0
+                df_asset.loc[rsi_values > 70, f"rsi_{rsi_length}"] = 1
+                df_asset.loc[rsi_values < 30, f"rsi_{rsi_length}"] = -1
     
-    #Stochastic Oscillator
-    kd_combinations = [(14, 3), (21, 5)]
-    for k, d in kd_combinations:
-        low = df_asset["close"].rolling(k).min()
-        high = df_asset["close"].rolling(k).max()
-        df_asset[f"k_{k}"] = (df_asset["close"] - low) * 100 / (high - low)
-        df_asset[f"d_{k}_{d}"] = df_asset[f"k_{k}"].rolling(d).mean()
+    # Stochastic Oscillator
+    if kd:
+        kd_combinations = [(14, 3), (21, 5)]
+        for k, d in kd_combinations:
+            if categorical:
+                low = df_asset["close"].rolling(k).min()
+                high = df_asset["close"].rolling(k).max()
+                k_values = (df_asset["close"] - low) * 100 / (high - low)
+                df_asset[f"k_{k}"] = 0
+                df_asset.loc[k_values > 80, f"k_{k}"] = 1
+                df_asset.loc[k_values < 20, f"k_{k}"] = -1
+            else:
+                low = df_asset["close"].rolling(k).min()
+                high = df_asset["close"].rolling(k).max()
+                df_asset[f"k_{k}"] = (df_asset["close"] - low) * 100 / (high - low)
+                df_asset[f"d_{k}_{d}"] = df_asset[f"k_{k}"].rolling(d).mean() 
 
     # date features
     if len(df_asset):

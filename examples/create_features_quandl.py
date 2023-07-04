@@ -22,10 +22,15 @@ def main(
     lookback_window_length: int,
     output_file_path: str,
     extra_lbw: List[int],
+    rsi: bool,
+    kd: bool,
+    categorical: bool
 ):
     features = pd.concat(
         [
-            deep_momentum_strategy_features(pull_quandl_sample_data(ticker)).assign(
+            deep_momentum_strategy_features(
+                pull_quandl_sample_data(ticker), rsi, kd, categorical
+            ).assign(
                 ticker=ticker
             )
             for ticker in tickers
@@ -111,6 +116,21 @@ if __name__ == "__main__":
             # choices=[],
             help="Fill missing prices.",
         )
+        parser.add_argument(
+            "--rsi",
+            action='store_true',
+            help='Whether to add RSI as additional input features'
+        )
+        parser.add_argument(
+            "--kd",
+            action='store_true',
+            help='Whether to add stochastic oscillator as additional input features'
+        )
+        parser.add_argument(
+            "--categorical",
+            action='store_true',
+            help='Whether to prepare indicators in categories, default is raw indicator values'
+        )
 
         args = parser.parse_known_args()[0]
 
@@ -120,6 +140,9 @@ if __name__ == "__main__":
             args.lookback_window_length,
             FEATURES_QUANDL_FILE_PATH(args.lookback_window_length),
             args.extra_lbw,
+            args.rsi,
+            args.kd,
+            args.categorical
         )
 
     main(*get_args())
