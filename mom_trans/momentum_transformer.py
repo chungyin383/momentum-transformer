@@ -151,6 +151,7 @@ def gated_residual_network(
     use_time_distributed: bool = True,
     additional_context=None,
     return_gate: bool = False,
+    GLU_Variant: str = "GLU",
 ):
     """Applies the gated residual network (GRN) as defined in paper.
     Args:
@@ -197,7 +198,7 @@ def gated_residual_network(
         dropout_rate=dropout_rate,
         use_time_distributed=use_time_distributed,
         activation=None,
-        GLU_Variant=self.GLU_Variant,
+        GLU_Variant=GLU_Variant,
     )
 
     if return_gate:
@@ -430,6 +431,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
                 dropout_rate=self.dropout_rate,
                 use_time_distributed=False,
                 additional_context=None,
+                GLU_Variant=self.GLU_Variant,
             )
 
             sparse_weights = keras.layers.Activation("softmax")(mlp_outputs)
@@ -444,6 +446,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
                     self.hidden_layer_size,
                     dropout_rate=self.dropout_rate,
                     use_time_distributed=False,
+                    GLU_Variant=self.GLU_Variant,
                 )
                 trans_emb_list.append(e)
 
@@ -466,24 +469,28 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
             self.hidden_layer_size,
             dropout_rate=self.dropout_rate,
             use_time_distributed=False,
+            GLU_Variant=self.GLU_Variant,
         )
         static_context_enrichment = gated_residual_network(
             static_encoder,
             self.hidden_layer_size,
             dropout_rate=self.dropout_rate,
             use_time_distributed=False,
+            GLU_Variant=self.GLU_Variant, 
         )
         static_context_state_h = gated_residual_network(
             static_encoder,
             self.hidden_layer_size,
             dropout_rate=self.dropout_rate,
             use_time_distributed=False,
+            GLU_Variant=self.GLU_Variant,
         )
         static_context_state_c = gated_residual_network(
             static_encoder,
             self.hidden_layer_size,
             dropout_rate=self.dropout_rate,
             use_time_distributed=False,
+            GLU_Variant=self.GLU_Variant,
         )
 
         def lstm_combine_and_mask(embedding):
@@ -522,6 +529,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
                 use_time_distributed=True,
                 additional_context=expanded_static_context,
                 return_gate=True,
+                GLU_Variant=self.GLU_Variant,
             )
 
             sparse_weights = keras.layers.Activation("softmax")(mlp_outputs)
@@ -537,6 +545,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
                     self.hidden_layer_size,
                     dropout_rate=self.dropout_rate,
                     use_time_distributed=True,
+                    GLU_Variant=self.GLU_Variant,
                 )
                 trans_emb_list.append(grn_output)
 
@@ -590,6 +599,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
             use_time_distributed=True,
             additional_context=expanded_static_context,
             return_gate=True,
+            GLU_Variant=self.GLU_Variant,
         )
 
         # Decoder self attention
@@ -611,6 +621,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
             self.hidden_layer_size,
             dropout_rate=self.dropout_rate,
             use_time_distributed=True,
+            GLU_Variant=self.GLU_Variant,
         )
 
         # Final skip connection
