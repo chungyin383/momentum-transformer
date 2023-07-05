@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 import gc
 import numpy as np
+import math
 
 concat = keras.backend.concatenate
 stack = keras.backend.stack
@@ -14,6 +15,7 @@ Multiply = keras.layers.Multiply
 Dropout = keras.layers.Dropout
 Activation = keras.layers.Activation
 Lambda = keras.layers.Lambda
+sigmoid = keras.activations.sigmoid
 
 from mom_trans.deep_momentum_network import DeepMomentumNetworkModel, SharpeLoss
 from settings.hp_grid import (
@@ -95,11 +97,12 @@ def apply_gating_layer(
         Tuple of tensors for: (GLU output, gate)
     """
   
-    def GELU(X):
+    def GEGLU(X):
         return 0.5*X*(1.0 + math.tanh(0.7978845608028654*(X + 0.044715*math.pow(X, 3))))
         
     def Swish(X):
-        return X*sigmoid(X)
+        sig = sigmoid(X)
+        return keras.layers.multiply([X, sig])
   
     if GLU_Variant == "GLU":
         GLU_activation = "sigmoid"
@@ -108,7 +111,7 @@ def apply_gating_layer(
     elif GLU_Variant == "ReGLU":
         GLU_activation = "relu"
     elif GLU_Variant == "GEGLU":
-        GLU_activation = GELU
+        GLU_activation = GEGLU
     elif GLU_Variant == "SwiGLU":
         GLU_activation = Swish
     
