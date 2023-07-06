@@ -139,20 +139,17 @@ def deep_momentum_strategy_features(
     
     # Stochastic Oscillator
     if kd:
-        kd_combinations = [(14, 3), (21, 5)]
-        for k, d in kd_combinations:
+        k_options = [14, 21]
+        for k in k_options:
+            low = df_asset["close"].rolling(k).min()
+            high = df_asset["close"].rolling(k).max()
+            k_values = (df_asset["close"] - low) * 100 / (high - low)
             if categorical:
-                low = df_asset["close"].rolling(k).min()
-                high = df_asset["close"].rolling(k).max()
-                k_values = (df_asset["close"] - low) * 100 / (high - low)
                 df_asset[f"k_{k}"] = 0
                 df_asset.loc[k_values > 80, f"k_{k}"] = 1
                 df_asset.loc[k_values < 20, f"k_{k}"] = -1
             else:
-                low = df_asset["close"].rolling(k).min()
-                high = df_asset["close"].rolling(k).max()
-                df_asset[f"k_{k}"] = (df_asset["close"] - low) * 100 / (high - low)
-                df_asset[f"d_{k}_{d}"] = df_asset[f"k_{k}"].rolling(d).mean() 
+                df_asset[f"k_{k}"] = k_values
 
     # date features
     if len(df_asset):

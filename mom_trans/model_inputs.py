@@ -87,7 +87,6 @@ class ModelFeatures:
         static_ticker_type_feature = False,
         rsi=False,
         kd=False,
-        categorical=False,
     ):
         """Initialises formatter. Splits data frame into training-validation-test data frames.
         This also calibrates scaling object, and transforms data for each split."""
@@ -137,26 +136,12 @@ class ModelFeatures:
             )
             
         if kd:
-            if categorical:
-                self._column_definition.append(
-                    ("k_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
-                self._column_definition.append(
-                    ("k_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
-            else:
-                self._column_definition.append(
-                    ("k_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
-                self._column_definition.append(
-                    ("d_14_3", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
-                self._column_definition.append(
-                    ("k_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
-                self._column_definition.append(
-                    ("d_21_5", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
-                )
+            self._column_definition.append(
+                ("k_14", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("k_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
 
         if time_features:
             self._column_definition.append(
