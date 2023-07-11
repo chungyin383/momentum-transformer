@@ -65,6 +65,10 @@ def main(
         architecture = "TFT"
         lstm_time_steps = 63
         changepoint_lbws = [63]
+    elif experiment == "TFT-CPD-183-30":
+        architecture = "TFT"
+        lstm_time_steps = 365 
+        changepoint_lbws = [183, 30]
     else:
         raise BaseException("Invalid experiment.")
 
