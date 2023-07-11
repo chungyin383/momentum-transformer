@@ -164,10 +164,11 @@ def deep_momentum_strategy_features(
         high = df_asset["close"].rolling(30).max()
         typical_price = (df_asset["close"] + low + high) / 3
         cumulative_volume = df_asset["volume"].rolling(30).sum()
-        df_asset[f"vwap"] = typical_price * df_asset["volume"] / cumulative_volume
-        df_asset[f"%change_vwap"] = df_asset["vwap"].diff(periods=1) / (df_asset["vwap"] - df_asset["vwap"].diff(periods=1))
+        vwap = typical_price * df_asset["volume"] / cumulative_volume
+        df_asset[f"%change_vwap"] = vwap.diff(periods=1) / (vwap - vwap.diff(periods=1))
 
-    
+    df_asset = df_asset.drop('volume', axis=1)
+
     # date features
     if len(df_asset):
         df_asset["day_of_week"] = df_asset.index.dayofweek
