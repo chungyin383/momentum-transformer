@@ -9,8 +9,8 @@ DEPTH = 1
 def main(api_key: str):
     quandl.ApiConfig.api_key = api_key
 
-    if not os.path.exists(os.path.join("data", "quandl")):
-        os.mkdir(os.path.join("data", "quandl"))
+    if not os.path.exists(os.path.join("data", "raw_data")):
+        os.mkdir(os.path.join("data", "raw_data"))
 
     for t in ALL_QUANDL_CODES:
         print(t)
@@ -23,7 +23,7 @@ def main(api_key: str):
             print(ex)
         if ("Settle" in data.columns) and (data.index.min() <= dt.datetime(2015, 1, 1)):
             data[["Settle"]].to_csv(
-                os.path.join("data", "quandl", f"{t.split('/')[-1]}.csv")
+                os.path.join("data", "raw_data", f"{t.split('/')[-1]}.csv")
             )
 
 

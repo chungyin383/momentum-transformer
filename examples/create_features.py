@@ -4,11 +4,11 @@ from typing import List
 
 import pandas as pd
 
-from data.pull_data import pull_quandl_sample_data
+from data.pull_data import pull_sample_data
 from settings.default import (
-    QUANDL_TICKERS,
-    CPD_QUANDL_OUTPUT_FOLDER,
-    FEATURES_QUANDL_FILE_PATH,
+    TICKERS,
+    CPD_OUTPUT_FOLDER,
+    FEATURES_FILE_PATH,
 )
 from mom_trans.data_prep import (
     deep_momentum_strategy_features,
@@ -24,12 +24,14 @@ def main(
     extra_lbw: List[int],
     rsi: bool,
     kd: bool,
-    categorical: bool
+    volume: bool,
+    categorical: bool,
+    crypto: bool
 ):
     features = pd.concat(
         [
             deep_momentum_strategy_features(
-                pull_quandl_sample_data(ticker), rsi, kd, categorical
+                pull_sample_data(ticker, volume), rsi, kd, volume, categorical, crypto
             ).assign(
                 ticker=ticker
             )
@@ -49,8 +51,8 @@ def main(
             for extra in extra_lbw:
                 extra_data = pd.read_csv(
                     output_file_path.replace(
-                        f"quandl_cpd_{lookback_window_length}lbw.csv",
-                        f"quandl_cpd_{extra}lbw.csv",
+                        f"cpd_{lookback_window_length}lbw.csv",
+                        f"cpd_{extra}lbw.csv",
                     ),
                     index_col=0,
                     parse_dates=True,
@@ -127,22 +129,34 @@ if __name__ == "__main__":
             help='Whether to add stochastic oscillator as additional input features'
         )
         parser.add_argument(
+            "--volume",
+            action='store_true',
+            help="Whether to add volume and VWAP as additional input features"
+        )
+        parser.add_argument(
             "--categorical",
             action='store_true',
             help='Whether to prepare indicators in categories, default is raw indicator values'
+        )
+        parser.add_argument(
+            "--crypto",
+            action='store_true',
+            help='Crypto data?'
         )
 
         args = parser.parse_known_args()[0]
 
         return (
-            QUANDL_TICKERS,
-            CPD_QUANDL_OUTPUT_FOLDER(args.lookback_window_length),
+            TICKERS,
+            CPD_OUTPUT_FOLDER(args.lookback_window_length),
             args.lookback_window_length,
-            FEATURES_QUANDL_FILE_PATH(args.lookback_window_length),
+            FEATURES_FILE_PATH(args.lookback_window_length),
             args.extra_lbw,
             args.rsi,
             args.kd,
-            args.categorical
+            args.volume,
+            args.categorical,
+            args.crypto
         )
 
     main(*get_args())

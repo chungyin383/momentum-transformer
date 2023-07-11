@@ -2,7 +2,7 @@ import requests
 from datetime import datetime
 import pandas as pd
 import os
-from settings.default import CRYPTO_TICKERS
+from settings.default import TICKERS
 
 MARKET_CHART_API = "https://api.coingecko.com/api/v3/coins/{coin}/market_chart"
 MARKET_CHART_PARAMS = {
@@ -13,11 +13,11 @@ MARKET_CHART_PARAMS = {
 
 def main():
 
-    if not os.path.exists(os.path.join("data", "coingecko")):
-        os.mkdir(os.path.join("data", "coingecko"))
+    if not os.path.exists(os.path.join("data", "raw_data")):
+        os.mkdir(os.path.join("data", "raw_data"))
 
     # Fetch data for each ticker and save it as a separate CSV file
-    for ticker in CRYPTO_TICKERS:
+    for ticker in TICKERS:
         print(ticker)
         try:
             response = requests.get(MARKET_CHART_API.format(coin=ticker), params=MARKET_CHART_PARAMS)
@@ -31,7 +31,7 @@ def main():
             df = pd.DataFrame(data, columns=["Date", "Settle", "Volume"])
             df.set_index("Date", inplace=True)
             df.to_csv(
-                os.path.join("data", "coingecko", f"{ticker}.csv")
+                os.path.join("data", "raw_data", f"{ticker}.csv")
             )
         except Exception as ex:
             print(ex)

@@ -5,19 +5,28 @@ CPD_DEFAULT_LBW = 21
 BACKTEST_AVERAGE_BASIS_POINTS = [None, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
 USE_KM_HYP_TO_INITIALISE_KC = True
 
-CPD_QUANDL_OUTPUT_FOLDER = lambda lbw: os.path.join(
-    "data", f"quandl_cpd_{(lbw if lbw else 'none')}lbw"
+CPD_OUTPUT_FOLDER = lambda lbw: os.path.join(
+    "data", f"cpd_{(lbw if lbw else 'none')}lbw"
 )
 
-CPD_QUANDL_OUTPUT_FOLDER_DEFAULT = CPD_QUANDL_OUTPUT_FOLDER(CPD_DEFAULT_LBW)
+CPD_OUTPUT_FOLDER_DEFAULT = CPD_OUTPUT_FOLDER(CPD_DEFAULT_LBW)
 
-FEATURES_QUANDL_FILE_PATH = lambda lbw: os.path.join(
-    "data", f"quandl_cpd_{(lbw if lbw else 'none')}lbw.csv"
+FEATURES_FILE_PATH = lambda lbw: os.path.join(
+    "data", f"cpd_{(lbw if lbw else 'none')}lbw.csv"
 )
 
-FEATURES_QUANDL_FILE_PATH_DEFAULT = FEATURES_QUANDL_FILE_PATH(CPD_DEFAULT_LBW)
+FEATURES_FILE_PATH_DEFAULT = FEATURES_FILE_PATH(CPD_DEFAULT_LBW)
 
-QUANDL_TICKERS = [
+TICKERS = [
+    'bitcoin',
+    'ethereum',
+    'binancecoin',
+    'ripple',
+    'cardano'
+]
+
+'''
+TICKERS = [
     "ICE_SB",
     "CME_SF",
     "CME_SI",
@@ -119,6 +128,7 @@ QUANDL_TICKERS = [
     "EUREX_FSMI",
     "EUREX_FSLI",
 ]
+'''
 
 ALL_QUANDL_CODES = [
     "CHRIS/ICE_NJ",

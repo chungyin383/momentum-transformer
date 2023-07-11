@@ -8,13 +8,13 @@ import numpy as np
 
 from settings.default import PINNACLE_DATA_CUT, PINNACLE_DATA_FOLDER
 
-def pull_quandl_sample_data(ticker: str) -> pd.DataFrame:
+def pull_sample_data(ticker: str, volume: bool) -> pd.DataFrame:
     return (
-        pd.read_csv(os.path.join("data", "quandl", f"{ticker}.csv"), parse_dates=[0])
-        .rename(columns={"Trade Date": "date", "Date": "date", "Settle": "close"})
+        pd.read_csv(os.path.join("data", "raw_data", f"{ticker}.csv"), parse_dates=[0])
+        .rename(columns={"Trade Date": "date", "Date": "date", "Settle": "close", "Volume": "volume"})
         .set_index("date")
         .replace(0.0, np.nan)
-    )
+    )[["close", "volume"] if volume else ["close"]]
 
 
 def pull_pinnacle_data(ticker: str) -> pd.DataFrame:

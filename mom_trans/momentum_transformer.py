@@ -669,7 +669,7 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
 
         model = keras.Model(inputs=all_inputs, outputs=outputs)
 
-        sharpe_loss = SharpeLoss(self.output_size).call
+        sharpe_loss = SharpeLoss(self.output_size, self.crypto).call
 
         model.compile(loss=sharpe_loss, optimizer=adam, sample_weight_mode="temporal")
 

@@ -30,8 +30,9 @@ from empyrical import sharpe_ratio
 
 
 class SharpeLoss(tf.keras.losses.Loss):
-    def __init__(self, output_size: int = 1):
+    def __init__(self, output_size: int = 1, crypto: bool = False):
         self.output_size = output_size  # in case we have multiple targets => output dim[-1] = output_size * n_quantiles
+        self.crypto = crypto
         super().__init__()
 
     def call(self, y_true, weights):
@@ -44,7 +45,7 @@ class SharpeLoss(tf.keras.losses.Loss):
                 - tf.square(mean_returns)
                 + 1e-9
             )
-            * tf.sqrt(252.0)
+            * tf.sqrt(365.0 if self.crypto else 252.0)
         )
 
 
@@ -61,6 +62,7 @@ class SharpeValidationLoss(keras.callbacks.Callback):
         weights_save_location="tmp/checkpoint",
         # verbose=0,
         min_delta=1e-4,
+        crypto=False,
     ):
         super(keras.callbacks.Callback, self).__init__()
         self.inputs = inputs
@@ -75,6 +77,7 @@ class SharpeValidationLoss(keras.callbacks.Callback):
         # self.best_weights = None
         self.weights_save_location = weights_save_location
         # self.verbose = verbose
+        self.crypto = crypto
 
     def set_weights_save_loc(self, weights_save_location):
         self.weights_save_location = weights_save_location
@@ -103,7 +106,7 @@ class SharpeValidationLoss(keras.callbacks.Callback):
                 tf.math.reduce_variance(captured_returns)
                 + tf.constant(1e-9, dtype=tf.float64)
             )
-            * tf.sqrt(tf.constant(252.0, dtype=tf.float64))
+            * tf.sqrt(tf.constant(365.0 if self.crypto else 252.0, dtype=tf.float64))
         ).numpy()
         if sharpe > self.best_sharpe + self.min_delta:
             self.best_sharpe = sharpe
@@ -234,6 +237,7 @@ class DeepMomentumNetworkModel(ABC):
         self.random_search_iterations = params["random_search_iterations"]
         self.evaluate_diversified_val_sharpe = params["evaluate_diversified_val_sharpe"]
         self.force_output_sharpe_length = params["force_output_sharpe_length"]
+        self.crypto = params["crypto"]
 
         print("Deep Momentum Network params:")
         for k in params:
@@ -294,6 +298,7 @@ class DeepMomentumNetworkModel(ABC):
                     num_val_time,
                     self.early_stopping_patience,
                     self.n_multiprocessing_workers,
+                    crypto=self.crypto,
                 ),
                 tf.keras.callbacks.TerminateOnNaN(),
             ]
@@ -374,6 +379,7 @@ class DeepMomentumNetworkModel(ABC):
                     self.early_stopping_patience,
                     self.n_multiprocessing_workers,
                     weights_save_location=temp_folder,
+                    crypto=self.crypto,
                 ),
                 tf.keras.callbacks.TerminateOnNaN(),
             ]
@@ -538,7 +544,7 @@ class LstmDeepMomentumNetworkModel(DeepMomentumNetworkModel):
 
         adam = keras.optimizers.Adam(lr=learning_rate, clipnorm=max_gradient_norm)
 
-        sharpe_loss = SharpeLoss(self.output_size).call
+        sharpe_loss = SharpeLoss(self.output_size, self.crypto).call
 
         model.compile(
             loss=sharpe_loss,

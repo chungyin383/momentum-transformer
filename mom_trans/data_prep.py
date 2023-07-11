@@ -12,7 +12,6 @@ from mom_trans.classical_strategies import (
 )
 
 VOL_THRESHOLD = 5  # multiple to winsorise by
-HALFLIFE_WINSORISE = 252
 
 
 def read_changepoint_results_and_fill_na(
@@ -68,7 +67,9 @@ def deep_momentum_strategy_features(
     df_asset: pd.DataFrame, 
     rsi: bool,
     kd: bool,
-    categorical: bool
+    volume: bool,
+    categorical: bool,
+    crypto: bool,
 ) -> pd.DataFrame:
     """prepare input features for deep learning model
 
@@ -87,6 +88,7 @@ def deep_momentum_strategy_features(
 
     # winsorize using rolling 5X standard deviations to remove outliers
     df_asset["srs"] = df_asset["close"]
+    HALFLIFE_WINSORISE = 365 if crypto else 252
     ewm = df_asset["srs"].ewm(halflife=HALFLIFE_WINSORISE)
     means = ewm.mean()
     stds = ewm.std()
@@ -97,7 +99,7 @@ def deep_momentum_strategy_features(
     df_asset["daily_vol"] = calc_daily_vol(df_asset["daily_returns"])
     # vol scaling and shift to be next day returns
     df_asset["target_returns"] = calc_vol_scaled_returns(
-        df_asset["daily_returns"], df_asset["daily_vol"]
+        df_asset["daily_returns"], df_asset["daily_vol"], crypto
     ).shift(-1)
 
     def calc_normalised_returns(day_offset):
@@ -108,16 +110,16 @@ def deep_momentum_strategy_features(
         )
 
     df_asset["norm_daily_return"] = calc_normalised_returns(1)
-    df_asset["norm_monthly_return"] = calc_normalised_returns(21)
-    df_asset["norm_quarterly_return"] = calc_normalised_returns(63)
-    df_asset["norm_biannual_return"] = calc_normalised_returns(126)
-    df_asset["norm_annual_return"] = calc_normalised_returns(252)
+    df_asset["norm_monthly_return"] = calc_normalised_returns(30 if crypto else 21)
+    df_asset["norm_quarterly_return"] = calc_normalised_returns(91 if crypto else 63)
+    df_asset["norm_biannual_return"] = calc_normalised_returns(183 if crypto else 126)
+    df_asset["norm_annual_return"] = calc_normalised_returns(365 if crypto else 252)
 
     # MACD
     trend_combinations = [(8, 24), (16, 48), (32, 96)]
     for short_window, long_window in trend_combinations:
         df_asset[f"macd_{short_window}_{long_window}"] = MACDStrategy.calc_signal(
-            df_asset["srs"], short_window, long_window
+            df_asset["srs"], short_window, long_window, crypto
         )
         if categorical:
             macd_line = df_asset[f"macd_{short_window}_{long_window}"]
