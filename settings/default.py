@@ -1009,3 +1009,11 @@ PINNACLE_ASSET_CLASS_MAPPING = {
     "ZM": "CM",
     "ZS": "CM",
 }
+
+CRYPTO_TICKERS = {
+    "bitcoin",
+    "ethereum",
+    "binancecoin",
+    "ripple",
+    "cardano",
+}
