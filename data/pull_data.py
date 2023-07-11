@@ -8,7 +8,7 @@ import numpy as np
 
 from settings.default import PINNACLE_DATA_CUT, PINNACLE_DATA_FOLDER
 
-def pull_sample_data(ticker: str, volume: bool) -> pd.DataFrame:
+def pull_sample_data(ticker: str, volume: bool = False) -> pd.DataFrame:
     return (
         pd.read_csv(os.path.join("data", "raw_data", f"{ticker}.csv"), parse_dates=[0])
         .rename(columns={"Trade Date": "date", "Date": "date", "Settle": "close", "Volume": "volume"})
