@@ -87,6 +87,7 @@ class ModelFeatures:
         static_ticker_type_feature = False,
         rsi=False,
         kd=False,
+        volume=False,
     ):
         """Initialises formatter. Splits data frame into training-validation-test data frames.
         This also calibrates scaling object, and transforms data for each split."""
@@ -141,6 +142,14 @@ class ModelFeatures:
             )
             self._column_definition.append(
                 ("k_21", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+        
+        if volume:
+            self._column_definition.append(
+                ("volume_change", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
+            )
+            self._column_definition.append(
+                ("vwap_change", DataTypes.REAL_VALUED, InputTypes.KNOWN_INPUT),
             )
 
         if time_features:

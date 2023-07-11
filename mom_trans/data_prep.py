@@ -156,7 +156,7 @@ def deep_momentum_strategy_features(
     # % Change in Volume
     if volume:
         change_volume = df_asset["volume"].diff(periods=1)
-        df_asset[f"%change_volume"] = change_volume / (df_asset["volume"] - change_volume)
+        df_asset[f"volume_change"] = change_volume / (df_asset["volume"] - change_volume)
 
     # % Change in VWAP
     if volume:
@@ -165,7 +165,7 @@ def deep_momentum_strategy_features(
         typical_price = (df_asset["close"] + low + high) / 3
         cumulative_volume = df_asset["volume"].rolling(30).sum()
         vwap = typical_price * df_asset["volume"] / cumulative_volume
-        df_asset[f"%change_vwap"] = vwap.diff(periods=1) / (vwap - vwap.diff(periods=1))
+        df_asset[f"vwap_change"] = vwap.diff(periods=1) / (vwap - vwap.diff(periods=1))
 
     df_asset = df_asset.drop('volume', axis=1)
 
