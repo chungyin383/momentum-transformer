@@ -476,7 +476,7 @@ def run_single_window(
         on=["identifier", "time"],
     )
     results_sw = calc_net_returns(
-        results_sw, BACKTEST_AVERAGE_BASIS_POINTS[1:], crypto, model_features.tickers
+        results_sw, BACKTEST_AVERAGE_BASIS_POINTS[1:], params["crypto"], model_features.tickers
     )
     results_sw.to_csv(os.path.join(directory, "captured_returns_sw.csv"))
 
@@ -496,7 +496,7 @@ def run_single_window(
         on=["identifier", "time"],
     )
     results_fw = calc_net_returns(
-        results_fw, BACKTEST_AVERAGE_BASIS_POINTS[1:], crypto, model_features.tickers
+        results_fw, BACKTEST_AVERAGE_BASIS_POINTS[1:], params["crypto"], model_features.tickers
     )
     results_fw.to_csv(os.path.join(directory, "captured_returns_fw.csv"))
 
