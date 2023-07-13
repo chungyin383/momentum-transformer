@@ -18,7 +18,7 @@ VOL_LOOKBACK = 60  # for ex-ante volatility
 VOL_TARGET = 0.15  # 15% volatility target
 
 
-def calc_performance_metrics(data: pd.DataFrame, metric_suffix="", num_identifiers = None) -> dict:
+def calc_performance_metrics(data: pd.DataFrame, metric_suffix="", num_identifiers = None, crypto=False) -> dict:
     """Performance metrics for evaluating strategy
 
     Args:
@@ -30,14 +30,15 @@ def calc_performance_metrics(data: pd.DataFrame, metric_suffix="", num_identifie
     if not num_identifiers:
         num_identifiers = len(data.dropna()["identifier"].unique())
     srs = data.dropna().groupby(level=0)["captured_returns"].sum()/num_identifiers
+    annualization = 365 if crypto else None
     return {
-        f"annual_return{metric_suffix}": annual_return(srs),
-        f"annual_volatility{metric_suffix}": annual_volatility(srs),
-        f"sharpe_ratio{metric_suffix}": sharpe_ratio(srs),
-        f"downside_risk{metric_suffix}": downside_risk(srs),
-        f"sortino_ratio{metric_suffix}": sortino_ratio(srs),
+        f"annual_return{metric_suffix}": annual_return(srs, annualization=annualization),
+        f"annual_volatility{metric_suffix}": annual_volatility(srs, annualization=annualization),
+        f"sharpe_ratio{metric_suffix}": sharpe_ratio(srs, annualization=annualization),
+        f"downside_risk{metric_suffix}": downside_risk(srs, annualization=annualization),
+        f"sortino_ratio{metric_suffix}": sortino_ratio(srs, annualization=annualization),
         f"max_drawdown{metric_suffix}": -max_drawdown(srs),
-        f"calmar_ratio{metric_suffix}": calmar_ratio(srs),
+        f"calmar_ratio{metric_suffix}": calmar_ratio(srs, annualization=annualization),
         f"perc_pos_return{metric_suffix}": len(srs[srs > 0.0]) / len(srs),
         f"profit_loss_ratio{metric_suffix}": np.mean(srs[srs > 0.0])
         / np.mean(np.abs(srs[srs < 0.0])),

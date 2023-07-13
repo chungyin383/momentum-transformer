@@ -169,6 +169,7 @@ def save_results(
     num_identifiers: int,
     asset_class_dictionary: Dict[str, str],
     extra_metrics: dict = {},
+    crypto: bool = False,
 ):
     """save results json
 
@@ -213,7 +214,7 @@ def save_results(
             ac_metrics = {
                 **ac_metrics,
                 **calc_performance_metrics(
-                    results_ac_bps.set_index("time"), suffix, num_identifiers
+                    results_ac_bps.set_index("time"), suffix, num_identifiers, crypto
                 ),
                 **calc_sharpe_by_year(
                     results_ac_bps.set_index("time"), _basis_point_suffix(basis_points)
@@ -535,6 +536,7 @@ def run_single_window(
             "performance_fw": performance_fw,
             "val_loss": val_loss,
         },
+        params["crypto"],
     )
 
     # get rid of everything and reset - TODO maybe not needed...
