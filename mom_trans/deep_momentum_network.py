@@ -30,9 +30,8 @@ from empyrical import sharpe_ratio
 
 
 class SharpeLoss(tf.keras.losses.Loss):
-    def __init__(self, output_size: int = 1, crypto: bool = False):
+    def __init__(self, output_size: int = 1):
         self.output_size = output_size  # in case we have multiple targets => output dim[-1] = output_size * n_quantiles
-        self.crypto = crypto
         super().__init__()
 
     def call(self, y_true, weights):
@@ -45,7 +44,7 @@ class SharpeLoss(tf.keras.losses.Loss):
                 - tf.square(mean_returns)
                 + 1e-9
             )
-            * tf.sqrt(365.0 if self.crypto else 252.0)
+            * tf.sqrt(252.0)
         )
 
 
@@ -62,7 +61,7 @@ class SharpeValidationLoss(keras.callbacks.Callback):
         weights_save_location="tmp/checkpoint",
         # verbose=0,
         min_delta=1e-4,
-        crypto=False,
+        transaction_cost=1,
     ):
         super(keras.callbacks.Callback, self).__init__()
         self.inputs = inputs
@@ -77,7 +76,9 @@ class SharpeValidationLoss(keras.callbacks.Callback):
         # self.best_weights = None
         self.weights_save_location = weights_save_location
         # self.verbose = verbose
-        self.crypto = crypto
+        self.previous_position = None
+        self.previous_sigma = None
+        self.transaction_cost = transaction_cost
 
     def set_weights_save_loc(self, weights_save_location):
         self.weights_save_location = weights_save_location
@@ -93,21 +94,34 @@ class SharpeValidationLoss(keras.callbacks.Callback):
             workers=self.n_multiprocessing_workers,
             use_multiprocessing=True,  # , batch_size=1
         )
-
         captured_returns = tf.math.unsorted_segment_mean(
             positions * self.returns, self.time_indices, self.num_time
         )[1:]
+        daily_portfolio_volitility = tf.sqrt(
+                (tf.math.reduce_variance(captured_returns ) ) # since the each asset's return - transaction cost
+                + tf.constant(1e-9, dtype=tf.float64)
+            ) * tf.sqrt(tf.constant(252.0, dtype=tf.float64))
         # ignoring null times
-
+        print("daily daily_portfolio_volitility:",daily_portfolio_volitility)
+        if(epoch ==0):
+            reg_term = 0
+        else:
+            portfolio_position_change = np.sum(np.absolute(positions.flatten() - self.previous_position.flatten()))
+            print("Type of the change: " , type(portfolio_position_change))
+            reg_term = self.transaction_cost * 0.15* 0.0001*(np.sum(portfolio_position_change) / daily_portfolio_volitility) # Assume the daily vol wont change
+            print("reg_term: ",reg_term )
+            print("Changes: " , portfolio_position_change)
         # TODO sharpe
+        
         sharpe = (
-            tf.reduce_mean(captured_returns)
+            tf.reduce_mean(captured_returns - reg_term)
             / tf.sqrt(
-                tf.math.reduce_variance(captured_returns)
+                (tf.math.reduce_variance(captured_returns - reg_term) ) # since the each asset's return - transaction cost
                 + tf.constant(1e-9, dtype=tf.float64)
             )
-            * tf.sqrt(tf.constant(365.0 if self.crypto else 252.0, dtype=tf.float64))
+            * tf.sqrt(tf.constant(252.0, dtype=tf.float64))
         ).numpy()
+        print("Computed Sharp:", sharpe)
         if sharpe > self.best_sharpe + self.min_delta:
             self.best_sharpe = sharpe
             self.patience_counter = 0  # reset the count
@@ -122,6 +136,8 @@ class SharpeValidationLoss(keras.callbacks.Callback):
                 self.model.load_weights(self.weights_save_location)
         logs["sharpe"] = sharpe  # for keras tuner
         print(f"\nval_sharpe {logs['sharpe']}\n")
+        self.previous_position = positions
+        self.previous_sigma = tf.sqrt(tf.math.reduce_variance(captured_returns))
 
 
 # Tuner = RandomSearch
@@ -237,7 +253,7 @@ class DeepMomentumNetworkModel(ABC):
         self.random_search_iterations = params["random_search_iterations"]
         self.evaluate_diversified_val_sharpe = params["evaluate_diversified_val_sharpe"]
         self.force_output_sharpe_length = params["force_output_sharpe_length"]
-        self.crypto = params["crypto"]
+#        self.transaction_cost = params["transaction_cost"]
 
         print("Deep Momentum Network params:")
         for k in params:
@@ -287,7 +303,6 @@ class DeepMomentumNetworkModel(ABC):
     def hyperparameter_search(self, train_data, valid_data):
         data, labels, active_flags, _, _ = ModelFeatures._unpack(train_data)
         val_data, val_labels, val_flags, _, val_time = ModelFeatures._unpack(valid_data)
-
         if self.evaluate_diversified_val_sharpe:
             val_time_indices, num_val_time = self._index_times(val_time)
             callbacks = [
@@ -298,7 +313,7 @@ class DeepMomentumNetworkModel(ABC):
                     num_val_time,
                     self.early_stopping_patience,
                     self.n_multiprocessing_workers,
-                    crypto=self.crypto,
+                    #transaction_cost=self.transaction_cost
                 ),
                 tf.keras.callbacks.TerminateOnNaN(),
             ]
@@ -379,7 +394,6 @@ class DeepMomentumNetworkModel(ABC):
                     self.early_stopping_patience,
                     self.n_multiprocessing_workers,
                     weights_save_location=temp_folder,
-                    crypto=self.crypto,
                 ),
                 tf.keras.callbacks.TerminateOnNaN(),
             ]
@@ -544,7 +558,7 @@ class LstmDeepMomentumNetworkModel(DeepMomentumNetworkModel):
 
         adam = keras.optimizers.Adam(lr=learning_rate, clipnorm=max_gradient_norm)
 
-        sharpe_loss = SharpeLoss(self.output_size, self.crypto).call
+        sharpe_loss = SharpeLoss(self.output_size).call
 
         model.compile(
             loss=sharpe_loss,
