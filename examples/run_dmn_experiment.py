@@ -104,7 +104,7 @@ def main(
 
         intervals = [
             (train_start, y, y + test_window_size)
-            for y in range(test_start, test_end - 1)
+            for y in range(test_start, test_end)
         ]
 
         params = MODLE_PARAMS.copy()
@@ -194,7 +194,7 @@ if __name__ == "__main__":
             metavar="e",
             type=int,
             nargs="?",
-            default=2022,
+            default=2021,
             help="Testing end year.",
         )
         parser.add_argument(
