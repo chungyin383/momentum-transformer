@@ -608,8 +608,10 @@ def run_classical_methods(
     features_file_path,
     train_intervals,
     reference_experiment,
+    asset_class_dictionary,
     long_only_experiment_name="long_only",
     tsmom_experiment_name="tsmom",
+    crypto=False,
 ):
     """Run classical TSMOM method and Long Only as defined in https://arxiv.org/pdf/2105.13727.pdf.
 
@@ -642,21 +644,49 @@ def run_classical_methods(
             left_on=["date", "ticker"],
             right_on=["time", "identifier"],
         )
+        returns_data["time"] = pd.to_datetime(returns_data["time"])
         returns_data["position"] = intermediate_momentum_position(0, returns_data)
         # returns_data["returns"] = returns_data["scaled_return_target"]
         returns_data["captured_returns"] = (
             returns_data["position"] * returns_data["returns"]
         )
         returns_data = returns_data.reset_index()[
-            ["identifier", "time", "returns", "position", "captured_returns"]
+            ["identifier", "time", "returns", "position", "captured_returns", "daily_vol"]
         ]
+
+        num_identifiers = len(returns_data.dropna()["identifier"].unique())
+        returns_data = calc_net_returns(
+            returns_data, BACKTEST_AVERAGE_BASIS_POINTS[1:], crypto
+        )
         returns_data.to_csv(f"{directory}/captured_returns_sw.csv")
+        save_results(
+            returns_data,
+            directory,
+            train_interval,
+            num_identifiers,
+            asset_class_dictionary,
+            crypto=crypto,
+        )
 
         directory = _get_directory_name(long_only_experiment_name, train_interval)
         if not os.path.exists(directory):
             os.mkdir(directory)
+        returns_data = returns_data.reset_index()[
+            ["identifier", "time", "returns", "position", "captured_returns", "daily_vol"]
+        ]
         returns_data["position"] = 1.0
         returns_data["captured_returns"] = (
             returns_data["position"] * returns_data["returns"]
         )
+        returns_data = calc_net_returns(
+            returns_data, BACKTEST_AVERAGE_BASIS_POINTS[1:], crypto
+        )
         returns_data.to_csv(f"{directory}/captured_returns_sw.csv")
+        save_results(
+            returns_data,
+            directory,
+            train_interval,
+            num_identifiers,
+            asset_class_dictionary,
+            crypto=crypto,
+        )
