@@ -115,8 +115,8 @@ TICKERS = [
     'ripio-credit-network',
     'edgeless',
     'aave',
-    'zencash',
-    'nexus',
+    'horizen',
+    'nexus'
     'einsteinium'
 ]
 
