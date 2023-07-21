@@ -59,6 +59,7 @@ TICKERS = [
     'golem',
     'salt',
     'ark',
+    'veritaseum',
     'digibyte',
     'vechain',
     'decred',
@@ -77,6 +78,7 @@ TICKERS = [
     'power-ledger',
     'xp',
     'bytom',
+    'kyber-network-crystal',
     'kin',
     'reddcoin',
     'dragonchain',
@@ -107,17 +109,15 @@ TICKERS = [
     'gxchain',
     'chainlink',
     'dent',
+    'poet',
     'nav-coin',
+    'monaco',
     'nebulas',
     'enigma',
     'zclassic',
     'dentacoin',
     'ripio-credit-network',
     'edgeless',
-    'aave',
-    'horizen',
-    'nexus'
-    'einsteinium'
 ]
 
 '''
