@@ -16,7 +16,7 @@ FEATURES_FILE_PATH = lambda lbw: os.path.join(
 )
 
 FEATURES_FILE_PATH_DEFAULT = FEATURES_FILE_PATH(CPD_DEFAULT_LBW)
-
+'''
 TICKERS = [
     'bitcoin',
     'ripple',
@@ -119,8 +119,8 @@ TICKERS = [
     'einsteinium',
     'adex',
 ]
-
 '''
+
 TICKERS = [
     "ICE_SB",
     "CME_SF",
@@ -223,7 +223,6 @@ TICKERS = [
     "EUREX_FSMI",
     "EUREX_FSLI",
 ]
-'''
 
 ALL_QUANDL_CODES = [
     "CHRIS/ICE_NJ",
