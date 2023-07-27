@@ -12,6 +12,7 @@ from mom_trans.backtest import _get_directory_name
 from settings.hp_grid import HP_MINIBATCH_SIZE
 from settings.fixed_params import MODLE_PARAMS
 from settings.default import TICKERS
+from mom_trans.model_inputs import InputTypes
 
 ASSET_CLASS_MAPPING = dict(zip(TICKERS, ["COMB"] * len(TICKERS)))
 TRAIN_VALID_RATIO = 0.90
@@ -82,7 +83,10 @@ def var_importance_single_year(
     best_model.load_weights(os.path.join(directory, "best", "checkpoints", "checkpoint"))
 
     att = dmn.get_attention(model_features.train, 32)
-    return np.mean(att['historical_flags'], axis=(0,1))
+    var_importance = np.mean(att['historical_flags'], axis=(0,1))
+    columns = [col[0] for col in model_features.get_column_definition() if col[2] == InputTypes.KNOWN_INPUT]
+    
+    return pd.DataFrame([var_importance], columns=columns, index=[train_interval[1]])
 
 
 def var_importance_all_years(
@@ -104,7 +108,7 @@ def var_importance_all_years(
             asset_class_dictionary=asset_class_dictionary,
         )
         all_results.append(row)
-    return pd.DataFrame(all_results)
+    return pd.concat(all_results, axis=0)
 
 
 
@@ -155,14 +159,16 @@ def main(
     params["categorical"] = categorical
     params["crypto"] = crypto
 
-    print(var_importance_all_years(
+    var_importance_all_years(
         experiment,
         features_file_path,
         intervals,
         params,
         changepoint_lbws,
         ASSET_CLASS_MAPPING,
-    ))
+    ).to_csv(
+        os.path.join("results", experiment, "variable_importance.csv")
+    )
 
 
 
