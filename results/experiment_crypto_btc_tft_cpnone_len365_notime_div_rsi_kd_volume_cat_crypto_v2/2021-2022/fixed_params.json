@@ -1,0 +1,50 @@
+{
+    "architecture": "TFT",
+    "total_time_steps": 365,
+    "early_stopping_patience": 25,
+    "multiprocessing_workers": 32,
+    "num_epochs": 300,
+    "fill_blank_dates": false,
+    "split_tickers_individually": true,
+    "random_search_iterations": 50,
+    "evaluate_diversified_val_sharpe": true,
+    "train_valid_ratio": 0.9,
+    "time_features": false,
+    "force_output_sharpe_length": null,
+    "rsi": true,
+    "kd": true,
+    "volume": true,
+    "GLU_Variant": "GLU",
+    "categorical": true,
+    "crypto": true,
+    "input_size": 16,
+    "output_size": 1,
+    "category_counts": [
+        100
+    ],
+    "static_input_loc": [
+        15
+    ],
+    "known_regular_inputs": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+    ],
+    "known_categorical_inputs": [
+        0
+    ],
+    "changepoint_lbws": [],
+    "features_file_path": "data/cpd_nonelbw.csv"
+}
