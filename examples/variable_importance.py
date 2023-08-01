@@ -14,12 +14,6 @@ from settings.fixed_params import MODLE_PARAMS
 from settings.default import TICKERS
 from mom_trans.model_inputs import InputTypes
 
-ASSET_CLASS_MAPPING = dict(zip(TICKERS, ["COMB"] * len(TICKERS)))
-TRAIN_VALID_RATIO = 0.90
-TIME_FEATURES = False
-FORCE_OUTPUT_SHARPE_LENGTH = None
-EVALUATE_DIVERSIFIED_VAL_SHARPE = True
-
 def var_importance_single_year(
     experiment_name: str,
     features_file_path: str,
@@ -190,6 +184,11 @@ LSTM_TIME_STEPS = 365 if CRYPTO else 252
 TRAIN_START = 1990
 TEST_START = 2016
 TEST_END = 2021
+ASSET_CLASS_MAPPING = dict(zip(TICKERS, ["COMB"] * len(TICKERS)))
+TRAIN_VALID_RATIO = 0.90
+TIME_FEATURES = False
+FORCE_OUTPUT_SHARPE_LENGTH = None
+EVALUATE_DIVERSIFIED_VAL_SHARPE = True
 ###############################################
 
 for e in EXPERIMENTS:
