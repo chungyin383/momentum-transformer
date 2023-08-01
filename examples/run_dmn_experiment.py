@@ -31,7 +31,7 @@ def main(
     crypto: bool,
 ):
 
-    NAME = "experiment_crypto_5assets" if crypto else "experiment_quandl_100assets" 
+    NAME = "experiment_crypto_100assets" if crypto else "experiment_quandl_100assets" 
 
     if experiment == "LSTM":
         architecture = "LSTM"
