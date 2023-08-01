@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 from empyrical import annual_volatility
 
-
+####### Parameters to change #######
 EXPERIMENTS = [
     'experiment_quandl_100assets_long_only',
     'experiment_quandl_100assets_tsmom',
@@ -35,7 +35,7 @@ CRYPTO = False
 ANNUALIZATION = 365 if CRYPTO else None
 VOL_TARGET = 0.15
 STARTING_BALANCE = 100
-
+##########################################
 
 for experiment in EXPERIMENTS:
 
