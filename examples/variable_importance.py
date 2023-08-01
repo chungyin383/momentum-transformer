@@ -170,21 +170,43 @@ def main(
         os.path.join("results", experiment, "variable_importance.csv")
     )
 
+####### Parameters to change #######
+EXPERIMENTS = [
+    'experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_cat_v1',
+    'experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_cat_v2',
+    'experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_cat_v3',
+    'experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_cat_v4',
+    'experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_cat_v5',
+]
+ARCHITECTURE = 'TFT'
+CPD_LENGTHS = [126, 21]
+RSI = True
+KD = True
+VOLUME = False
+CATEGORICAL = True
+CRYPTO = False
+GLU_VARIANT = "GLU"
+LSTM_TIME_STEPS = 365 if CRYPTO else 252
+TRAIN_START = 1990
+TEST_START = 2016
+TEST_END = 2021
+###############################################
 
+for e in EXPERIMENTS:
+    main(
+        experiment=e,
+        architecture=ARCHITECTURE,
+        changepoint_lbws=CPD_LENGTHS,
+        lstm_time_steps=LSTM_TIME_STEPS,
+        train_start=TRAIN_START,
+        test_start=TEST_START,
+        test_end=TEST_END,
+        test_window_size=1,
+        GLU_Variant=GLU_VARIANT,
+        rsi=RSI,
+        kd=KD,
+        volume=VOLUME,
+        categorical=CATEGORICAL,
+        crypto=CRYPTO,
+    )
 
-main(
-    experiment='experiment_quandl_100assets_tft_cp12621_len252_notime_div_rsi_kd_v1',
-    architecture='TFT',
-    changepoint_lbws=[126, 21],
-    lstm_time_steps=252,
-    train_start=1990,
-    test_start=2016,
-    test_end=2021,
-    test_window_size=1,
-    GLU_Variant="GLU",
-    rsi=True,
-    kd=True,
-    volume=False,
-    categorical=False,
-    crypto=False,
-)
