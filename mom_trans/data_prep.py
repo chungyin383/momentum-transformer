@@ -86,6 +86,11 @@ def deep_momentum_strategy_features(
         | (df_asset["close"] > 1e-8)  # price is zero
     ].copy()
 
+    if volume:
+        df_asset = df_asset[
+            df_asset["volume"] != 0
+        ].copy() # remove zero volume
+
     # winsorize using rolling 5X standard deviations to remove outliers
     df_asset["srs"] = df_asset["close"]
     HALFLIFE_WINSORISE = 365 if crypto else 252
