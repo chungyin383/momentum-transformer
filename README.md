@@ -1,51 +1,67 @@
-# Trading with the Momentum Transformer
+# HKU MSc(CompSc) Project – Trading with the Momentum Transformer
 ## About
-This code accompanies the paper [Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture](https://arxiv.org/pdf/2112.08534.pdf) and additionally provides an implementation for the paper [Slow Momentum with Fast Reversion: A Trading Strategy Using Deep Learning and Changepoint Detection](https://arxiv.org/pdf/2105.13727.pdf). 
+This is the codebase for the captioned project. We aim to improve the performance of the TFT model mentioned in the paper [Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture](https://arxiv.org/pdf/2112.08534.pdf). The codes are based on [Github](https://github.com/kieranjwood/trading-momentum-transformer) of the reference paper. At the top of each python file in this Github repository, we documented the parts that were edited by us. If no such documentation are found, that Python file comes from the reference paper without amendment.  
+
+## Requirements
+1. Create a virtual environment: `python -m venv momentum-transformer`
+
+1. Install Python version 3.7
+1. Install packages: `pip install -r requirements.txt`
 
 ## Using the code
-1. Create a Nasdaq Data Link account to access the [free Quandl dataset](https://data.nasdaq.com/data/CHRIS-wiki-continuous-futures/documentation). This dataset provides continuous contracts for 600+ futures, built on top of raw data from CME, ICE, LIFFE etc.
-2. Download the Quandl data with: `python -m data.download_quandl_data <<API_KEY>>`, or download the Coingecko data with: `python -m data.download_coingecko_data`.
-3. Create Momentum Transformer input features with: `python -m examples.create_features`. For Quandl, we use the 100 futures tickers which have i) the longest history ii) more than 90% of trading days have data iii) data up until at least Dec 2021. For Coingecko, we use 5 tickers with the highest market cap. 
-4. Optionally, run the changepoint detection module: `python -m examples.concurent_cpd <<CPD_WINDOW_LENGTH>>`, for example `python -m examples.concurent_cpd 21` and `python -m examples.concurent_cpd 126`. For cryptocurrency, use 30 and 183 instead.
-5. If `concurent_cpd` does not work, try `python -m examples.sequential_cpd <<CPD_WINDOW_LENGTH>>`.
-6. Create Momentum Transformer input features, including CPD module features with: `python -m examples.create_features 21` after the changepoint detection module has completed.
-7. To create a features file with multiple changepoint detection lookback windows: `python -m examples.create_features 126 21` after the 126 day LBW changepoint detection module has completed and a features file for the 21 day LBW exists.
-8. Run one of the Momentum Transformer or Slow Momentum with Fast Reversion experiments with `python -m examples.run_dmn_experiment <<EXPERIMENT_NAME>>`
 
-## Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture
-> Deep learning architectures, specifically Deep Momentum Networks (DMNs) , have been found to be an effective approach to momentum and mean-reversion trading. However, some of the key challenges in recent years involve learning long-term dependencies, degradation of performance when considering returns net of transaction costs and adapting to new market regimes, notably during the SARS-CoV-2 crisis. Attention mechanisms, or Transformer-based architectures, are a solution to such challenges because they allow the network to focus on significant time steps in the past and longer-term patterns. We introduce the Momentum Transformer, an attention-based architecture which outperforms the benchmarks, and is inherently interpretable, providing us with greater insights into our deep learning trading strategy. Our model is an extension to the LSTM-based DMN, which directly outputs position sizing by optimising the network on a risk-adjusted performance metric, such as Sharpe ratio. We find an attention-LSTM hybrid Decoder-Only Temporal Fusion Transformer (TFT) style architecture is the best performing model. In terms of interpretability, we observe remarkable structure in the attention patterns, with significant peaks of importance at momentum turning points. The time series is thus segmented into regimes and the model tends to focus on previous time-steps in alike regimes. We find changepoint detection (CPD) , another technique for responding to regime change, can complement multi-headed attention, especially when we run CPD at multiple timescales. Through the addition of an interpretable variable selection network, we observe how CPD helps our model to move away from trading predominantly on daily returns data. We note that the model can intelligently switch between, and blend, classical strategies - basing its decision on patterns in the data.
+### Downloading raw data
+1. If you want to download Quandl data, create a Nasdaq Data Link account to access the [free Quandl dataset](https://data.nasdaq.com/data/CHRIS-wiki-continuous-futures/documentation). This dataset provides continuous contracts for 600+ futures, built on top of raw data from CME, ICE, LIFFE etc.
+1. Change the list `ALL_QUANDL_CODES` for Quandl, or `TICKERS` for cryptocurrency data for  Coingecko. For Quandl, we use the 100 futures tickers which have i) the longest history ii) more than 90% of trading days have data iii) data up until at least Dec 2021. For Coingecko, we use 100 tickers with the highest market cap as of 1st Jan 2018. 
+1. Download the Quandl data with: `python -m data.download_quandl_data <<API_KEY>>`, or download the Coingecko data with: `python -m data.download_coingecko_data`.
 
-## Slow Momentum with Fast Reversion: A Trading Strategy Using Deep Learning and Changepoint Detection
-> Momentum strategies are an important part of alternative investments and are at the heart of commodity trading advisors (CTAs). These strategies have, however, been found to have difficulties adjusting to rapid changes in market conditions, such as during the 2020 market crash. In particular, immediately after momentum turning points, where a trend reverses from an uptrend (downtrend) to a downtrend (uptrend), time-series momentum (TSMOM) strategies are prone to making bad bets. To improve the response to regime change, we introduce a novel approach, where we insert an online changepoint detection (CPD) module into a Deep Momentum Network (DMN) pipeline, which uses an LSTM deep-learning architecture to simultaneously learn both trend estimation and position sizing. Furthermore, our model is able to optimise the way in which it balances 1) a slow momentum strategy which exploits persisting trends, but does not overreact to localised price moves, and 2) a fast mean-reversion strategy regime by quickly flipping its position, then swapping it back again to exploit localised price moves. Our CPD module outputs a changepoint location and severity score, allowing our model to learn to respond to varying degrees of disequilibrium, or smaller and more localised changepoints, in a data driven manner. Back-testing our model over the period 1995-2020, the addition of the CPD module leads to an improvement in Sharpe ratio of one-third. The module is especially beneficial in periods of significant nonstationarity, and in particular, over the most recent years tested (2015-2020) the performance boost is approximately two-thirds. This is interesting as traditional momentum strategies have been underperforming in this period.
+### Create CPD features (Optional)
+1. Run the changepoint detection module: `python -m examples.concurent_cpd <<CPD_WINDOW_LENGTH>>`, for example `python -m examples.concurent_cpd 21` and `python -m examples.concurent_cpd 126`. For cryptocurrency, use 30 and 183 instead.
+1. If `concurent_cpd` does not work, try `python -m examples.sequential_cpd <<CPD_WINDOW_LENGTH>>`.
 
+### Create input featues (without CPD module)
+1. Create Momentum Transformer input features with: `python -m examples.create_features`. The default settings would prepare a csv file with normalized returns and MACD. The following arguments can be added in the command:
+- `--rsi`: whether to add RSI as additional input features
+- `--kd`: whether to add stochastic oscillator as additional input features
+- `--volume`: whether to add volume and VWAP as additional input features (only available for cryptocurrency)
+- `--categorical`: whether to convert MACD, RSI, stochastic oscillator values into signal labels
+- `--crypto`: whether your raw data is cryptocurrency data
 
-## References
-Please cite our papers with:
-```bib
-@article{wood2021trading,
-  title={Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture},
-  author={Wood, Kieran and Giegerich, Sven and Roberts, Stephen and Zohren, Stefan},
-  journal={arXiv preprint arXiv:2112.08534},
-  year={2021}
-}
+### Create input featues (with CPD module)
 
-@article {Wood111,
-	author = {Wood, Kieran and Roberts, Stephen and Zohren, Stefan},
-	title = {Slow Momentum with Fast Reversion: A Trading Strategy Using Deep Learning and Changepoint Detection},
-	volume = {4},
-	number = {1},
-	pages = {111--129},
-	year = {2022},
-	doi = {10.3905/jfds.2021.1.081},
-	publisher = {Institutional Investor Journals Umbrella},
-	issn = {2640-3943},
-	URL = {https://jfds.pm-research.com/content/4/1/111},
-	eprint = {https://jfds.pm-research.com/content/4/1/111.full.pdf},
-	journal = {The Journal of Financial Data Science}
-}
-```
+1. Create Momentum Transformer input features including CPD module features with: `python -m examples.create_features 21` after the changepoint detection module has completed. (or 30 for cryptocurrency data)
+1. To create a features file with multiple changepoint detection lookback windows: `python -m examples.create_features 126 21` after the 126 (183 for crypto) day LBW changepoint detection module has completed and a features file for the 21 (30 for crypto) day LBW exists.
+1. Additional flags can be added when calling the python module, same as those described in the previous section.
 
-The Momentum Transformer uses a number of components from the Temporal Fusion Transformer (TFT). The code for the TFT can be found [here](https://github.com/google-research/google-research/tree/master/tft).
+### Run experiment
 
-## Sample results
-Will be made available soon. 
+1. Run one of the experiments with `python -m examples.run_dmn_experiment <<EXPERIMENT_NAME>>`. Optional arguments include:-
+- `--rsi`: whether to add RSI as additional input features
+- `--kd`: whether to add stochastic oscillator as additional input features
+- `--volume`: whether to add volume and VWAP as additional input features (only available for cryptocurrency)
+- `--categorical`: whether to convert MACD, RSI, stochastic oscillator values into signal labels
+- `--crypto`: whether your raw data is cryptocurrency data
+- `--GLU_Variant` which GLU variant to use (Bilinear / ReGLU / GEGLU / SwiGLU), default is GLU. e.g. `--GLU_Variant "Bilinear"`
+- `--train_start`: indicate the starting year of training data, e.g. `--train_start 2018`
+- `--test_start`: indicate the starting year of testing data, e.g. `--test_start 2021`
+- `--test_end`: indicate the ending year of testing data, e.g. `--test_end 2023`
+- `--num_repeats`: indicate the number of repeats that the experiment would be conducted, e.g. `--num_repeats 5`
+
+### Run classical strategies (Long only / TSMOM)
+This script is for generating the results of Long only and TSMOM for benchmarking.
+1. Create features file for the reference experiment (See section *Create input featues*)
+2. Change necessary variables in `run_classical_strategies.py` and execute the code with `python -m examples.run_classical_strategies`.
+
+### Output variable importance
+This script is for generating variable importance for the input features of a model. This script can only be run after the model has been built and stored under the folder `results`.
+1. Change the necessary parameters in `variable_importance.py`.
+2. Execute the code with `python -m examples.variable_importance`. An csv file will be generated in for each experiment in the `results` folder.
+
+### Plot returns graph
+This script is for simulating the change of fund balance given an initial fund of $100. Multiple experiments can be plotted on the same graph. This script can only be run after the models have been built and stored under the folder `results`.
+1. Change the necessary parameters in `plot_returns_graph.py`.
+2. Execute the code with `python -m examples.plot_returns_graph`. A graph will be displayed.
+
+### Plot activation functions
+This script is for visualizing the difference between activation functions.
+1. Execute the code with `python -m examples.plot_activation_functions`. A graph will be displayed.
