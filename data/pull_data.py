@@ -61,3 +61,13 @@ def pull_pinnacle_data_multiple(
         .drop(columns="index")
         .copy()
     )
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 11, 13-14 and 17
+    - cater for the addition of volume as an input feature
+
+##########################################################################################
+'''

@@ -160,3 +160,17 @@ if __name__ == "__main__":
         )
 
     main(*get_args())
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 7, 9-11, 25-29, 33-35, 54-55, 150-159
+    - generalize for crypto and non-crypto data
+    - allow the addition of extra features, including RSI, KD, Volume, 
+      VWAP, signal labels
+Lines 121-145
+    - add extra arguments for RSI, KD, Volume, Crypto and Signal labels
+
+##########################################################################################
+'''

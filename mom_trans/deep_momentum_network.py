@@ -552,3 +552,13 @@ class LstmDeepMomentumNetworkModel(DeepMomentumNetworkModel):
             sample_weight_mode="temporal",
         )
         return model
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Line 33, 35, 48, 65, 80, 109, 124, 240, 301, 382, 547:
+    - cater for crypto experiments
+
+##########################################################################################
+'''

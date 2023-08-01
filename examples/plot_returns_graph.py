@@ -63,3 +63,11 @@ plt.ylabel('Fund Balance ($)')
 plt.legend(LEGENDS)
 plt.show()
 
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+This file is entirely written by our team.
+
+##########################################################################################
+'''

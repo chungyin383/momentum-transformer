@@ -64,3 +64,15 @@ if __name__ == "__main__":
         ]
 
     main(*get_args())
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 6-7, 11, 14-16
+    - to generalize for crypto and non-crypto data
+Lines 19-20, 42-63
+    - to add new arguments for flexible training start date and end date
+
+##########################################################################################
+'''

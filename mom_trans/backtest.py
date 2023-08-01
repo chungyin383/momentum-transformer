@@ -446,8 +446,7 @@ def run_single_window(
     best_hp, best_model = dmn.hyperparameter_search(
         model_features.train, model_features.valid
     )
-    #att = dmn.get_attention(model_features.train, 32)
-    #print(np.mean(att['historical_flags'], axis=(0,1)))
+
     val_loss = dmn.evaluate(model_features.valid, best_model)
 
     print(f"Best validation loss = {val_loss}")
@@ -690,3 +689,17 @@ def run_classical_methods(
             asset_class_dictionary,
             crypto=crypto,
         )
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Line 172, 217, 413-415, 479, 499, 538, 613:
+    - cater for crypto experiments and addition of extra features
+
+Line 610, 646, 653, 655-668, 673-675, 680-682, 684-691:
+    - Bug fix on the original code to make it possible to run
+    classical TSMOM method and Long only experiments
+
+##########################################################################################
+'''

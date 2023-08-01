@@ -33,3 +33,11 @@ plt.ylabel("Activation")
 plt.grid()
 plt.legend()
 plt.show()
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+This file is entirely written by our team.
+
+##########################################################################################
+'''

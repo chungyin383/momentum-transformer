@@ -222,3 +222,14 @@ def include_changepoint_features(
     features.index = features["date"]
 
     return features
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 5, 66-73, 89-93, 96, 107, 118-121, 123-174:
+    - Addition of RSI, KD, % change in Volume and VWAP, labelled signals
+    - Cater for crypto assets
+
+##########################################################################################
+'''

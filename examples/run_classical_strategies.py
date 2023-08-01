@@ -16,3 +16,13 @@ features_file_path = os.path.join(
 )
 
 run_classical_methods(features_file_path, INTERVALS, REFERENCE_EXPERIMENT, ASSET_CLASS_MAPPING, crypto=True)
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 3-18:
+    - generalize for crypto and non-crypto experiments
+
+##########################################################################################
+'''

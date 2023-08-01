@@ -1,6 +1,6 @@
 # HKU MSc(CompSc) Project – Trading with the Momentum Transformer
 ## About
-This is the codebase for the captioned project. We aim to improve the performance of the TFT model mentioned in the paper [Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture](https://arxiv.org/pdf/2112.08534.pdf). The codes are based on [Github](https://github.com/kieranjwood/trading-momentum-transformer) of the reference paper. At the top of each python file in this Github repository, we documented the parts that were edited by us. If no such documentation are found, that Python file comes from the reference paper without amendment.  
+This is the codebase for the captioned project. We aim to improve the performance of the TFT model mentioned in the paper [Trading with the Momentum Transformer: An Intelligent and Interpretable Architecture](https://arxiv.org/pdf/2112.08534.pdf). The codes are based on [Github](https://github.com/kieranjwood/trading-momentum-transformer) of the reference paper. **At the END of each python file in this Github repository, we documented the parts that were edited by us.**
 
 ## Requirements
 1. Create a virtual environment: `python -m venv momentum-transformer`
@@ -65,3 +65,6 @@ This script is for simulating the change of fund balance given an initial fund o
 ### Plot activation functions
 This script is for visualizing the difference between activation functions.
 1. Execute the code with `python -m examples.plot_activation_functions`. A graph will be displayed.
+
+## Experiment Results
+The results and models of each trial of each experiment in our report has been uploaded under the folder `results`.

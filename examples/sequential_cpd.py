@@ -67,3 +67,16 @@ if __name__ == "__main__":
         ]
 
     main(*get_args())
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+This file is entirely written by our team. 
+
+This script serves the same purpose as concurrent_cpd.py, which is in 
+the original reference codebase, yet we find it unable to run. 
+Therefore we write another version of the code.
+
+##########################################################################################
+'''

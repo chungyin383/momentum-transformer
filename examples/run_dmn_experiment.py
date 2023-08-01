@@ -272,3 +272,18 @@ if __name__ == "__main__":
         )
 
     main(*get_args())
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 5, 13, 26-35, 50, 54, 58, 68-71, 89-98, 117-122, 131, 136, 146, 
+172, 177, 185, 193, 201, 209, 216-255, 266-271
+    - generalize for crypto and non-crypto experiments
+    - allow the addition of extra features, including RSI, KD, Volume, 
+      VWAP, signal labels
+Line 107, 197:
+    - bug fix on the original code
+
+##########################################################################################
+'''

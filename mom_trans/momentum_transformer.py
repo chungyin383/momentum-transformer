@@ -884,3 +884,17 @@ class TftDeepMomentumNetworkModel(DeepMomentumNetworkModel):
         attention_weights["time"] = time[:, :, 0]
 
         return attention_weights
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 6, 18, 87, 99-117, 126, 132, 157, 204, 362, 437, 452, 475, 482,
+489, 496, 535, 551, 590, 605, 617, 627, 632:
+    - experiments on GLU variants 
+
+Line 672:
+    - cater for crypto experiments
+
+##########################################################################################
+'''

@@ -219,3 +219,14 @@ class MACDStrategy:
         return np.sum(
             [self.calc_signal(srs, S, L) for S, L in self.trend_combinations]
         ) / len(self.trend_combinations)
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 21, 33-41, 63, 71, 132, 137, 142, 155-156, 159, 184, 203-204:
+    - Change of annualization factor in performance matrics /
+      volatility scaling due to addition of crypto assets
+
+##########################################################################################
+'''

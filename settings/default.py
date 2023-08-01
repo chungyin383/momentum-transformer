@@ -1114,10 +1114,14 @@ PINNACLE_ASSET_CLASS_MAPPING = {
     "ZS": "CM",
 }
 
-CRYPTO_TICKERS = [
-    "bitcoin",
-    "ethereum",
-    "binancecoin",
-    "ripple",
-    "cardano",
-]
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Lines 8-18:
+    - generalize for crypto and non-crypto assets
+    
+Lines 19-124:
+    - addition of cryptocurrency tickers
+
+##########################################################################################
+'''

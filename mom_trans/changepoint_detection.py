@@ -387,3 +387,12 @@ def run_module(
             writer.writerow(
                 [window_date, time_index, cp_loc, cp_loc_normalised, cp_score]
             )
+
+
+'''
+############################ LIST OF AMENDMENTS ##########################################
+
+Nil.
+
+##########################################################################################
+'''
